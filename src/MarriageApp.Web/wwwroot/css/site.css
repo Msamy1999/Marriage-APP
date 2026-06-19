@@ -1,0 +1,316 @@
+/* =====================================================================================
+   "وِصال" — Warm & Romantic theme (blush + warm gold on off-white paper).
+   A friendly, hopeful, tasteful look for an Arabic RTL Muslim marriage platform.
+   Everything is driven from the :root variables below, so the whole theme is tweakable
+   from one place. Built purely over Bootstrap 5 RTL — no JS.
+   ===================================================================================== */
+
+:root {
+  --brand: #B23A48;          /* rose — primary brand / CTA */
+  --brand-deep: #8E2E3A;     /* deeper rose (gradient end / active) */
+  --accent: #C7546A;         /* warm rose accent (hover / secondary) */
+  --gold: #C9A14A;           /* warm gold — flourishes, gold CTA, rank #1 */
+  --gold-light: #D8B25C;     /* gold gradient start */
+  --ink: #6E3B38;            /* rose-brown text / headings */
+  --ink-soft: #8A6F6A;       /* muted rose-taupe subtext */
+  --bg: #FBF1EC;             /* warm blush page background */
+  --surface: #FFFDFC;        /* warm off-white card / paper surface */
+  --surface-blush: #FFF3EF;  /* tender blush (card headers, alert-info) */
+  --line: #F3D9D2;           /* hairline borders */
+  --input-border: #EAD6D0;   /* input resting border */
+
+  --groom: #B07A1E;          /* gold-brown — العريس identity */
+  --groom-wash: linear-gradient(160deg, #FFFBF4 0%, #FDF1E2 100%);
+  --groom-border: #EFE0C4;
+  --bride: #B23A48;          /* rose — العروسة identity */
+  --bride-wash: linear-gradient(160deg, #FFF7F6 0%, #FDE9EA 100%);
+  --bride-border: #F4D4D7;
+
+  --success: #2F7D52; --success-bg: #E7F4EC;
+  --pending: #9A6B12; --pending-bg: #FBF0DC;
+  --suspend: #7A5C59; --suspend-bg: #EFE7E6;
+  --danger:  #B23A48; --danger-bg:  #FDEDEA;   /* soft rose, not a harsh red */
+
+  --grad-brand: linear-gradient(135deg, #C7546A 0%, #B23A48 100%);
+  --grad-gold:  linear-gradient(135deg, #D8B25C 0%, #C9A14A 100%);
+  --grad-hero:  radial-gradient(120% 90% at 50% 0%, #FFF6F2 0%, #FCEDE8 45%, #F8E3DC 100%);
+  --grad-body:  linear-gradient(180deg, #FFF8F5 0%, #FBF1EC 100%);
+
+  --radius-card: 1.1rem; --radius-pill: 999px; --radius-input: .7rem;
+  --shadow-card: 0 6px 22px rgba(178,58,72,.07), 0 1px 3px rgba(0,0,0,.03);
+  --shadow-card-hover: 0 12px 30px rgba(178,58,72,.12);
+  --ease: .18s ease;
+
+  --font-body: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+  --font-display: 'El Messiri', 'Tajawal', serif;
+}
+
+/* ---- Base ---- */
+html { font-size: 14px; position: relative; min-height: 100%; }
+@media (min-width: 768px) { html { font-size: 16px; } }
+
+body {
+  margin-bottom: 60px;
+  font-family: var(--font-body);
+  background: var(--grad-body) fixed;
+  color: var(--ink);
+}
+
+h1, h2, h3, .navbar-brand, .card-header, .hero-title {
+  font-family: var(--font-display);
+}
+
+/* Warm focus ring everywhere (replaces the old green ring) */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-select:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 .12rem #fff, 0 0 0 .28rem rgba(178,58,72,.30);
+  outline: none;
+}
+
+/* ---- Navbar (warm light bar) ---- */
+.navbar-warm {
+  background: linear-gradient(90deg, #FFF1F0 0%, #FFE9E4 100%);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 2px 14px rgba(193,107,92,.10);
+  position: sticky; top: 0; z-index: 1030;
+  backdrop-filter: blur(6px);
+}
+.navbar-warm .navbar-brand { font-weight: 700; font-size: 1.35rem; color: var(--brand); }
+.navbar-warm .nav-link { color: var(--ink); position: relative; font-weight: 500; }
+.navbar-warm .nav-link::after {
+  content: ''; position: absolute; bottom: .15rem; right: 50%; left: 50%;
+  height: 2px; background: var(--gold); transition: left .2s ease, right .2s ease;
+}
+.navbar-warm .nav-link:hover::after { left: .5rem; right: .5rem; }
+.navbar-warm .btn-link.nav-link { text-decoration: none; }
+
+/* ---- Hero (landing) ---- */
+.hero {
+  position: relative; overflow: hidden;
+  background: var(--grad-hero); border-radius: 1.5rem;
+  padding: 4rem 1rem 3rem; margin-bottom: 2rem; text-align: center;
+}
+.hero::before, .hero::after {
+  content: ''; position: absolute; width: 220px; height: 220px;
+  border-radius: 50%; filter: blur(60px); opacity: .30; z-index: 0;
+}
+.hero::before { background: var(--gold);   top: -60px; inset-inline-start: -40px; }
+.hero::after  { background: var(--accent); bottom: -70px; inset-inline-end: -40px; }
+.hero > * { position: relative; z-index: 1; }
+.hero-title { font-weight: 700; font-size: clamp(2rem, 5vw, 2.8rem); color: var(--ink); }
+.hero-title .kw {
+  background: var(--grad-brand); -webkit-background-clip: text;
+  background-clip: text; color: transparent;
+}
+.hero .lead { color: var(--ink-soft); font-weight: 500; max-width: 600px; margin-inline: auto; }
+.trust-pill {
+  display: inline-block; background: var(--surface-blush); color: var(--brand);
+  border: 1px solid var(--line); border-radius: var(--radius-pill);
+  padding: .35rem .9rem; font-weight: 700; font-size: .85rem;
+}
+.hero-divider { width: 64px; height: 18px; margin: .9rem auto 1.2rem; position: relative; }
+.hero-divider::before {
+  content: ''; position: absolute; top: 50%; inset-inline: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+.hero-divider::after {
+  content: '\2726'; position: absolute; inset: 0; display: grid; place-items: center;
+  color: var(--gold); font-size: .9rem; animation: glow 3s ease-in-out infinite;
+}
+
+/* ---- Gender choice cards ---- */
+.gender-card {
+  display: block; text-align: center; text-decoration: none;
+  border-radius: 1.4rem; padding: 2.75rem 1rem;
+  box-shadow: 0 8px 26px rgba(178,58,72,.08);
+  transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
+}
+.gender-card .emoji-halo {
+  width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center;
+  margin-inline: auto; margin-bottom: .75rem;
+}
+.gender-card .emoji { font-size: 3.25rem; margin: 0; display: block; }
+.gender-card h3 { font-family: var(--font-display); font-weight: 600; }
+.gender-card .hint { opacity: 0; transition: opacity .2s ease; font-weight: 600; }
+.gender-card:hover .hint { opacity: 1; }
+
+.gender-card--groom { background: var(--groom-wash); border: 2px solid var(--groom-border); }
+.gender-card--groom .emoji-halo { background: radial-gradient(circle, #FBEFCF 0%, #FDF6E6 70%); }
+.gender-card--groom h3 { color: var(--groom); }
+.gender-card--groom:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: var(--shadow-card-hover); }
+
+.gender-card--bride { background: var(--bride-wash); border: 2px solid var(--bride-border); }
+.gender-card--bride .emoji-halo { background: radial-gradient(circle, #FBDCE1 0%, #FDEDEF 70%); }
+.gender-card--bride h3 { color: var(--bride); }
+.gender-card--bride:hover { border-color: var(--brand); transform: translateY(-5px); box-shadow: var(--shadow-card-hover); }
+
+/* ---- Cards ---- */
+.card {
+  border: 1px solid var(--line); border-radius: var(--radius-card);
+  background: var(--surface); box-shadow: var(--shadow-card);
+  transition: transform var(--ease), box-shadow var(--ease);
+}
+.card-header {
+  background: var(--surface-blush); border-bottom: 1px solid var(--line);
+  font-weight: 600; color: var(--ink);
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+/* Neutralize Bootstrap utility headers used in the Razor views */
+.card-header.bg-light, .card-header.bg-success {
+  background: var(--surface-blush) !important; color: var(--ink) !important;
+}
+.card-hover:hover { transform: translateY(-3px); box-shadow: var(--shadow-card-hover); }
+
+/* ---- Admin match score cards ---- */
+.match-card { position: relative; }
+.match-card::before {
+  content: ''; position: absolute; top: 0; bottom: 0; inset-inline-end: 0;
+  width: 5px; border-radius: var(--radius-card) 0 0 var(--radius-card);
+  background: var(--grad-brand);
+}
+.match-card--top::before { background: var(--grad-gold); }
+.match-card--top .card-header { background: linear-gradient(90deg, #FCF3DE, #FFF3EF); }
+.card-header.subject-header { background: var(--grad-brand) !important; color: #fff !important; }
+
+/* ---- Buttons (pill, lifted) ---- */
+.btn {
+  border-radius: var(--radius-pill); font-weight: 700; padding: .55rem 1.4rem;
+  transition: transform var(--ease), box-shadow var(--ease), background-position .3s, filter var(--ease);
+}
+.btn-success {
+  background: var(--grad-brand); background-size: 200% auto; border: none; color: #fff;
+  box-shadow: 0 4px 12px rgba(178,58,72,.28);
+}
+.btn-success:hover { transform: translateY(-1px); background-position: right center; box-shadow: 0 8px 18px rgba(178,58,72,.34); color: #fff; }
+.btn-success:active { transform: translateY(0); }
+.btn-outline-success { background: transparent; border: 1.5px solid var(--brand); color: var(--brand); }
+.btn-outline-success:hover { background: #FCEDE8; color: var(--brand); border-color: var(--brand); }
+.btn-gold { background: var(--grad-gold); color: #4A3410; border: none; box-shadow: 0 4px 12px rgba(201,161,74,.30); }
+.btn-sm { padding: .35rem .9rem; }
+.btn-outline-danger { border-color: var(--danger); color: var(--danger); }
+.btn-outline-danger:hover { background: var(--danger); color: #fff; }
+
+/* ---- Badges (soft tinted lozenges) ---- */
+.badge { border-radius: var(--radius-pill); padding: .4em .9em; font-weight: 600; font-size: .8rem; }
+.badge-matched   { background: var(--success-bg); color: var(--success); }
+.badge-pending   { background: var(--pending-bg); color: var(--pending); }
+.badge-suspended { background: var(--suspend-bg); color: var(--suspend); }
+.badge-incomplete{ background: var(--danger-bg);  color: var(--danger); }
+.badge.bg-info, .badge.bg-secondary { background: var(--surface-blush) !important; color: var(--ink) !important; }
+.score-pill { background: var(--grad-gold); color: #4A3410; font-size: 1.05rem; font-weight: 700; }
+.match-card--top .score-pill { animation: glow 2.4s ease-in-out infinite; }
+
+/* ---- Alerts (gentle, RTL-correct stripe) ---- */
+.alert { border: none; border-radius: .9rem; border-inline-start: 4px solid; padding: 1rem 1.1rem; }
+.alert-info    { background: var(--surface-blush); color: var(--ink); border-inline-start-color: var(--gold); }
+.alert-success { background: var(--success-bg); color: var(--success); border-inline-start-color: var(--success); }
+.alert-warning { background: #FCF3E0; color: var(--pending); border-inline-start-color: var(--gold-light); }
+.alert-danger  { background: var(--danger-bg); color: var(--danger); border-inline-start-color: var(--danger); }
+.alert-link { color: inherit; font-weight: 700; text-decoration: underline; }
+.alert-matched { animation: pop .5s ease-out both; }  /* one-shot celebration, Matched only */
+
+/* ---- Form inputs ---- */
+.form-control, .form-select, input[type=file] {
+  background: var(--surface); border: 1.5px solid var(--input-border);
+  border-radius: var(--radius-input); padding: .6rem .9rem;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--accent); box-shadow: 0 0 0 .18rem rgba(199,84,106,.18); background: #fff;
+}
+.form-control::placeholder { color: #B89B96; }
+.form-label { font-family: var(--font-body); font-weight: 500; color: var(--ink); margin-bottom: .35rem; }
+.is-invalid, .input-validation-error { border-color: var(--danger) !important; }
+.field-validation-error, .text-danger { color: var(--danger) !important; }
+::file-selector-button {
+  background: var(--surface-blush); color: var(--brand); border: none;
+  border-radius: .6rem; font-weight: 700; padding: .4rem .8rem; margin-inline-end: .6rem;
+}
+.form-section-title { font-family: var(--font-display); font-weight: 600; color: var(--ink); }
+.form-section-title::before { content: '\2726  '; color: var(--gold); }
+
+/* keep the green-tinted helpers used as accents readable on the warm theme */
+.text-success { color: var(--brand) !important; }
+
+/* ---- Footer ---- */
+.footer {
+  position: absolute; bottom: 0; width: 100%; white-space: nowrap; line-height: 60px;
+  background: var(--surface-blush); border-top: 1px solid var(--line) !important; color: var(--ink-soft);
+}
+.footer a { color: var(--brand); }
+
+/* ---- Protected (view-only) photos ---- */
+.protected-photo {
+  -webkit-user-drag: none; user-select: none; pointer-events: none;
+  max-width: 100%; border-radius: .6rem;
+}
+
+/* ---- Animations ---- */
+@keyframes glow { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
+@keyframes pop { 0% { transform: scale(.85); opacity: 0; } 70% { transform: scale(1.04); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes floatUp { from { transform: translateY(6px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* =====================================================================================
+   MOBILE / PHONE OPTIMIZATION (client-facing pages especially)
+   The Bootstrap grid already stacks columns below md; these rules make phones genuinely
+   comfortable: no iOS zoom, big tap targets, lighter hero, tidy galleries, sticky actions.
+   ===================================================================================== */
+
+/* Bigger, easier-to-tap checkboxes & radios (helps the multi-select preference groups) */
+.form-check-input { width: 1.25em; height: 1.25em; margin-top: .12em; cursor: pointer; }
+.form-check-label { cursor: pointer; padding-inline-start: .2rem; }
+
+/* The multi-select preference checkbox groups: roomy, finger-friendly tap rows
+   (keep Bootstrap's float-based .form-check layout intact for correct RTL mirroring) */
+.form-check { min-height: 2.1rem; padding-block: .25rem; }
+.form-check .form-check-label { line-height: 1.6; }
+
+/* Tidy, uniform photo gallery thumbnails on every screen */
+.photo-thumb { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: .6rem; }
+
+@media (max-width: 575.98px) {
+  /* iOS Safari zooms in when a focused field's font-size is < 16px — force 16px on phones */
+  .form-control, .form-select, .form-control-sm, .form-select-sm,
+  input[type=file], textarea { font-size: 16px; }
+
+  /* Comfortable page gutters */
+  .container { padding-inline: 1rem; }
+
+  /* Brand never crowds the toggler */
+  .navbar-warm .navbar-brand { font-size: 1.05rem; }
+
+  /* Lighter hero so the fold isn't all banner */
+  .hero { padding: 2.4rem 1rem 1.9rem; border-radius: 1.1rem; }
+  .hero-title { font-size: 1.7rem; }
+  .hero .lead { font-size: 1rem; }
+  .hero::before, .hero::after { width: 150px; height: 150px; }
+
+  /* Dashboard header: let a long name + status badge wrap instead of squishing */
+  .page-head { flex-wrap: wrap; gap: .5rem; }
+  .page-head h2 { font-size: 1.35rem; }
+
+  /* Gender choice cards take the full width and breathe */
+  .gender-card { padding: 2.25rem 1rem; }
+
+  /* Generous tap targets for primary actions */
+  .btn { padding: .65rem 1.2rem; }
+  .btn-lg { font-size: 1.05rem; }
+
+  /* The long registration form's save/cancel bar sticks to the bottom, full-width &
+     stacked, so the user can save from anywhere without scrolling to the end */
+  .form-actions {
+    position: sticky; bottom: 0; z-index: 1020;
+    flex-direction: column; gap: .5rem;
+    margin-inline: -1rem; padding: .75rem 1rem;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -6px 18px rgba(178,58,72,.10);
+  }
+  .form-actions .btn { width: 100%; }
+}
+
+/* ---- Accessibility: respect reduced-motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .gender-card:hover, .btn:hover, .card-hover:hover { transform: none !important; }
+}

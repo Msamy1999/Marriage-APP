@@ -1,0 +1,262 @@
+@model ProfileFormViewModel
+@{
+    var isFemale = Model.Gender == Gender.Female;
+    ViewData["Title"] = isFemale ? "بيانات العروسة" : "بيانات العريس";
+}
+
+@functions {
+    // Renders a multi-select checkbox group bound to a List<TEnum> property so the
+    // model binder reconstructs the selected list (later combined into a [Flags] mask).
+    Microsoft.AspNetCore.Html.IHtmlContent CheckboxGroup<TEnum>(string name, IEnumerable<TEnum> selected) where TEnum : struct, Enum
+    {
+        var sb = new System.Text.StringBuilder();
+        sb.Append("<div class='d-flex flex-wrap gap-3'>");
+        foreach (var v in Enum.GetValues<TEnum>())
+        {
+            var label = ((Enum)(object)v).GetDisplayName();
+            var isChecked = selected.Contains(v) ? "checked" : "";
+            sb.Append($"<div class='form-check'><input class='form-check-input' type='checkbox' name='{name}' value='{v}' id='{name}_{v}' {isChecked}/>" +
+                      $"<label class='form-check-label' for='{name}_{v}'>{label}</label></div>");
+        }
+        sb.Append("</div>");
+        return new Microsoft.AspNetCore.Html.HtmlString(sb.ToString());
+    }
+}
+
+<h2 class="text-success mb-4">@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Gender" />
+    <input type="hidden" asp-for="ProfileId" />
+
+    @* ===================== Personal data ===================== *@
+    <div class="card mb-3">
+        <div class="card-header bg-light fw-bold">🧍 البيانات الشخصية</div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col-md-3">
+                <label asp-for="DateOfBirth" class="form-label"></label>
+                <input asp-for="DateOfBirth" type="date" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="HeightCm" class="form-label"></label>
+                <input asp-for="HeightCm" type="number" class="form-control" />
+                <span asp-validation-for="HeightCm" class="text-danger"></span>
+            </div>
+
+            @if (!isFemale)
+            {
+                <div class="col-md-3">
+                    <label asp-for="WeightKg" class="form-label"></label>
+                    <input asp-for="WeightKg" type="number" class="form-control" />
+                </div>
+            }
+
+            <div class="col-md-4">
+                <label asp-for="EducationLevel" class="form-label"></label>
+                <select asp-for="EducationLevel" class="form-select" asp-items="Html.GetEnumSelectList<EducationLevel>()"></select>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Occupation" class="form-label"></label>
+                <input asp-for="Occupation" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="MaritalStatus" class="form-label"></label>
+                <select asp-for="MaritalStatus" class="form-select" asp-items="Html.GetEnumSelectList<MaritalStatus>()"></select>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="CurrentResidence" class="form-label"></label>
+                <input asp-for="CurrentResidence" class="form-control" placeholder="مثال: القاهرة" />
+                <span asp-validation-for="CurrentResidence" class="text-danger"></span>
+            </div>
+            @if (!isFemale)
+            {
+                <div class="col-md-6">
+                    <label asp-for="FutureMaritalResidence" class="form-label"></label>
+                    <input asp-for="FutureMaritalResidence" class="form-control" />
+                </div>
+            }
+            <div class="col-md-6">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" dir="ltr" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="ReligiousCommitment" class="form-label"></label>
+                <select asp-for="ReligiousCommitment" class="form-select" asp-items="Html.GetEnumSelectList<ReligiousCommitment>()"></select>
+            </div>
+
+            @if (isFemale)
+            {
+                <div class="col-md-6">
+                    <label asp-for="DressCode" class="form-label"></label>
+                    <select asp-for="DressCode" class="form-select" asp-items="Html.GetEnumSelectList<DressCode>()">
+                        <option value="">— اختر —</option>
+                    </select>
+                </div>
+            }
+
+            <div class="col-12">
+                <label asp-for="PersonalityDescription" class="form-label"></label>
+                <textarea asp-for="PersonalityDescription" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="col-12">
+                <div class="form-check">
+                    <input asp-for="HasHealthCondition" class="form-check-input" />
+                    <label asp-for="HasHealthCondition" class="form-check-label"></label>
+                </div>
+                <textarea asp-for="HealthConditionDescription" class="form-control mt-2" rows="2" placeholder="إن وجدت، اذكر التفاصIل"></textarea>
+            </div>
+        </div>
+    </div>
+
+    @* ===================== Family data ===================== *@
+    <div class="card mb-3">
+        <div class="card-header bg-light fw-bold">👨‍👩‍👧 بيانات العائلة</div>
+        <div class="card-body row g-3">
+            <div class="col-md-6">
+                <label asp-for="FatherOccupation" class="form-label"></label>
+                <input asp-for="FatherOccupation" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="MotherOccupationOrEducation" class="form-label"></label>
+                <input asp-for="MotherOccupationOrEducation" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="SiblingsCountAndStudies" class="form-label"></label>
+                <input asp-for="SiblingsCountAndStudies" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="FamilyCommitmentLevel" class="form-label"></label>
+                <select asp-for="FamilyCommitmentLevel" class="form-select" asp-items="Html.GetEnumSelectList<FamilyCommitmentLevel>()"></select>
+            </div>
+            @if (!isFemale)
+            {
+                <div class="col-md-6">
+                    <label asp-for="MotherOrSisterPhone" class="form-label"></label>
+                    <input asp-for="MotherOrSisterPhone" class="form-control" dir="ltr" />
+                </div>
+            }
+        </div>
+    </div>
+
+    @* ===================== Gender-specific preferences ===================== *@
+    <div class="card mb-3">
+        <div class="card-header bg-light fw-bold">💬 تفضيلاتك الشخصية</div>
+        <div class="card-body row g-3">
+            @if (isFemale)
+            {
+                <div class="col-md-4 form-check ms-3">
+                    <input asp-for="AcceptsTravel" class="form-check-input" />
+                    <label asp-for="AcceptsTravel" class="form-check-label"></label>
+                </div>
+                <div class="col-md-4 form-check ms-3">
+                    <input asp-for="AllowsOnlineViewing" class="form-check-input" />
+                    <label asp-for="AllowsOnlineViewing" class="form-check-label"></label>
+                </div>
+                <div class="col-md-4 form-check ms-3">
+                    <input asp-for="AcceptsDivorcedOrWithChildrenGroom" class="form-check-input" />
+                    <label asp-for="AcceptsDivorcedOrWithChildrenGroom" class="form-check-label"></label>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-6 form-check ms-3">
+                    <input asp-for="IntendsToTravel" class="form-check-input" />
+                    <label asp-for="IntendsToTravel" class="form-check-label"></label>
+                </div>
+                <div class="col-md-6 form-check ms-3">
+                    <input asp-for="AcceptsDivorcedOrWithChildrenBride" class="form-check-input" />
+                    <label asp-for="AcceptsDivorcedOrWithChildrenBride" class="form-check-label"></label>
+                </div>
+            }
+        </div>
+    </div>
+
+    @* ===================== Requirements in the other party ===================== *@
+    <div class="card mb-3">
+        <div class="card-header bg-light fw-bold">💍 المواصفات المطلوبة في الطرف الآخر</div>
+        <div class="card-body row g-3">
+            <div class="col-md-3">
+                <label asp-for="MinAge" class="form-label"></label>
+                <input asp-for="MinAge" type="number" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="MaxAge" class="form-label"></label>
+                <input asp-for="MaxAge" type="number" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="MinHeightCm" class="form-label"></label>
+                <input asp-for="MinHeightCm" type="number" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label asp-for="MaxHeightCm" class="form-label"></label>
+                <input asp-for="MaxHeightCm" type="number" class="form-control" />
+            </div>
+
+            <div class="col-12">
+                <label class="form-label fw-semibold">@Html.DisplayNameFor(m => m.AcceptedEducationLevels) <small class="text-muted">(يمكن اختيار أكثر من واحد)</small></label>
+                @(CheckboxGroup<EducationLevel>("AcceptedEducationLevels", Model.AcceptedEducationLevels))
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-semibold">@Html.DisplayNameFor(m => m.AcceptedReligiousCommitments)</label>
+                @(CheckboxGroup<ReligiousCommitment>("AcceptedReligiousCommitments", Model.AcceptedReligiousCommitments))
+            </div>
+            @if (!isFemale)
+            {
+                <div class="col-12">
+                    <label class="form-label fw-semibold">@Html.DisplayNameFor(m => m.AcceptedDressCodes)</label>
+                    @(CheckboxGroup<DressCode>("AcceptedDressCodes", Model.AcceptedDressCodes))
+                </div>
+            }
+            <div class="col-12">
+                <label class="form-label fw-semibold">@Html.DisplayNameFor(m => m.AcceptedMaritalStatuses)</label>
+                @(CheckboxGroup<MaritalStatus>("AcceptedMaritalStatuses", Model.AcceptedMaritalStatuses))
+            </div>
+            <div class="col-12">
+                <label class="form-label fw-semibold">@Html.DisplayNameFor(m => m.AcceptedFamilyCommitmentLevels)</label>
+                @(CheckboxGroup<FamilyCommitmentLevel>("AcceptedFamilyCommitmentLevels", Model.AcceptedFamilyCommitmentLevels))
+            </div>
+
+            <div class="col-12">
+                <label asp-for="AcceptedResidencesCsv" class="form-label"></label>
+                <input asp-for="AcceptedResidencesCsv" class="form-control" placeholder="القاهرة، الجيزة، الإسكندرية" />
+            </div>
+
+            <div class="col-md-4 form-check ms-3">
+                <input asp-for="RequiresTravelWillingness" class="form-check-input" />
+                <label asp-for="RequiresTravelWillingness" class="form-check-label"></label>
+            </div>
+            <div class="col-md-4 form-check ms-3">
+                <input asp-for="AcceptsDivorced" class="form-check-input" />
+                <label asp-for="AcceptsDivorced" class="form-check-label"></label>
+            </div>
+            <div class="col-md-4 form-check ms-3">
+                <input asp-for="AcceptsWithChildren" class="form-check-input" />
+                <label asp-for="AcceptsWithChildren" class="form-check-label"></label>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="OtherConditions" class="form-label"></label>
+                <textarea asp-for="OtherConditions" class="form-control" rows="2"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-actions d-flex gap-2 mb-5">
+        <button type="submit" class="btn btn-success btn-lg">احفظ بياناتي بأمان</button>
+        <a class="btn btn-outline-secondary btn-lg" asp-action="Dashboard">إلغاء</a>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

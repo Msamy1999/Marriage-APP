@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0478B117-90D5-4D79-9B1A-4B6BA98D8FDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarriageApp.Core", "src\MarriageApp.Core\MarriageApp.Core.csproj", "{B5DB93F0-4C29-4B62-B21D-9B4BFC0F1F9B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarriageApp.Infrastructure", "src\MarriageApp.Infrastructure\MarriageApp.Infrastructure.csproj", "{B3AD2D9A-62CE-4CE4-8644-17B61844C5D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarriageApp.Web", "src\MarriageApp.Web\MarriageApp.Web.csproj", "{CCDBAF54-3FC1-4DCA-8F81-91B747750723}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6B27E3A7-0C64-4E6F-8D98-62B3F49C6324}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarriageApp.Tests", "tests\MarriageApp.Tests\MarriageApp.Tests.csproj", "{FDE7553E-5D95-49C5-A2F6-C490D213811E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B5DB93F0-4C29-4B62-B21D-9B4BFC0F1F9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5DB93F0-4C29-4B62-B21D-9B4BFC0F1F9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5DB93F0-4C29-4B62-B21D-9B4BFC0F1F9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5DB93F0-4C29-4B62-B21D-9B4BFC0F1F9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3AD2D9A-62CE-4CE4-8644-17B61844C5D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3AD2D9A-62CE-4CE4-8644-17B61844C5D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3AD2D9A-62CE-4CE4-8644-17B61844C5D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3AD2D9A-62CE-4CE4-8644-17B61844C5D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCDBAF54-3FC1-4DCA-8F81-91B747750723}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCDBAF54-3FC1-4DCA-8F81-91B747750723}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCDBAF54-3FC1-4DCA-8F81-91B747750723}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCDBAF54-3FC1-4DCA-8F81-91B747750723}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDE7553E-5D95-49C5-A2F6-C490D213811E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDE7553E-5D95-49C5-A2F6-C490D213811E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDE7553E-5D95-49C5-A2F6-C490D213811E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDE7553E-5D95-49C5-A2F6-C490D213811E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B5DB93F0-4C29-4B62-B21D-9B4BFC0F1F9B} = {0478B117-90D5-4D79-9B1A-4B6BA98D8FDA}
+		{B3AD2D9A-62CE-4CE4-8644-17B61844C5D3} = {0478B117-90D5-4D79-9B1A-4B6BA98D8FDA}
+		{CCDBAF54-3FC1-4DCA-8F81-91B747750723} = {0478B117-90D5-4D79-9B1A-4B6BA98D8FDA}
+		{FDE7553E-5D95-49C5-A2F6-C490D213811E} = {6B27E3A7-0C64-4E6F-8D98-62B3F49C6324}
+	EndGlobalSection
+EndGlobal

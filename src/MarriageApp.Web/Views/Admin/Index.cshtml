@@ -1,0 +1,57 @@
+@model List<Profile>
+@{
+    ViewData["Title"] = "لوحة المشرف";
+}
+
+<h2 class="text-success mb-3">طلبات التسجيل</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()">
+            <option value="">كل الأنواع</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <select name="status" class="form-select" asp-items="Html.GetEnumSelectList<ProfileStatus>()">
+            <option value="">كل الحالات</option>
+        </select>
+    </div>
+    <div class="col-auto"><button class="btn btn-outline-success">تصفية</button></div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>الاسم</th>
+                <th>النوع</th>
+                <th>العمر</th>
+                <th>المؤهل</th>
+                <th>السكن</th>
+                <th>الحالة</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Gender.GetDisplayName()</td>
+                    <td>@p.Age</td>
+                    <td>@p.EducationLevel.GetDisplayName()</td>
+                    <td>@p.CurrentResidence</td>
+                    <td><span class="badge bg-secondary">@p.Status.GetDisplayName()</span></td>
+                    <td>
+                        <a class="btn btn-sm btn-success" asp-action="MatchReview" asp-route-id="@p.Id">عرض أفضل التطابقات</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="PhotoAudit" asp-route-profileId="@p.Id">سجل الصور</a>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted">لا توجد طلبات.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,120 @@
+@model MatchReviewViewModel
+@{
+    ViewData["Title"] = "أفضل التطابقات";
+    var subject = Model.Subject;
+}
+
+<a asp-action="Index" class="btn btn-sm btn-outline-secondary mb-3">→ رجوع للقائمة</a>
+
+<div class="card mb-4">
+    <div class="card-header subject-header fw-bold">
+        الطرف: @subject.Name (@subject.Gender.GetDisplayName()) — @subject.Age سنة — @subject.CurrentResidence
+    </div>
+    <div class="card-body">
+        <p class="mb-1"><strong>المؤهل:</strong> @subject.EducationLevel.GetDisplayName() — <strong>الالتزام:</strong> @subject.ReligiousCommitment.GetDisplayName()</p>
+        <p class="mb-0"><strong>الحالة:</strong> @subject.MaritalStatus.GetDisplayName() — <strong>الهاتف:</strong> <span dir="ltr">@subject.PhoneNumber</span></p>
+    </div>
+</div>
+
+<h4 class="mb-3">أعلى 5 تطابقات (يراها المشرف فقط)</h4>
+
+@if (!Model.TopMatches.Any())
+{
+    <div class="alert alert-warning">لا توجد تطابقات مرشّحة حاليًا — بنوسّع دائرة البحث، تابعنا قريبًا.</div>
+}
+
+@foreach (var (match, idx) in Model.TopMatches.Select((m, i) => (m, i + 1)))
+{
+    var candidate = Model.Candidates.GetValueOrDefault(match.CandidateProfileId);
+    var existing = Model.ExistingMatches.FirstOrDefault(e =>
+        e.MaleProfileId == match.CandidateProfileId || e.FemaleProfileId == match.CandidateProfileId);
+
+    <div class="card mb-3 match-card @(idx == 1 ? "match-card--top" : "")">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold">@(idx == 1 ? "🏅 " : "")#@idx — @match.CandidateName</span>
+            <span class="badge score-pill">@match.Percentage.ToString("0.#")%</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    @if (candidate is not null)
+                    {
+                        <p class="mb-1">
+                            @candidate.Age سنة — @candidate.HeightCm سم — @candidate.EducationLevel.GetDisplayName()
+                            — @candidate.CurrentResidence
+                        </p>
+                        <p class="text-muted mb-2">
+                            الالتزام: @candidate.ReligiousCommitment.GetDisplayName() —
+                            الحالة: @candidate.MaritalStatus.GetDisplayName()
+                        </p>
+                    }
+
+                    <div class="small text-muted mb-1">
+                        تطابق الطرف معه: @match.SubjectToCandidate.ToString("0.#")% —
+                        تطابقه مع الطرف: @match.CandidateToSubject.ToString("0.#")%
+                    </div>
+
+                    @if (match.ViolatedConstraints.Any())
+                    {
+                        <div class="alert alert-warning py-1 px-2 small mb-2">
+                            ⚠️ مخالفات: @string.Join("، ", match.ViolatedConstraints)
+                        </div>
+                    }
+
+                    <details>
+                        <summary class="text-success" style="cursor:pointer">تفاصيل احتساب النسبة</summary>
+                        <table class="table table-sm mt-2 mb-0">
+                            <thead><tr><th>المعيار</th><th>الوزن</th><th>المكتسب</th><th>التفصيل</th></tr></thead>
+                            <tbody>
+                                @foreach (var c in match.Breakdown)
+                                {
+                                    <tr>
+                                        <td>@c.Criterion</td>
+                                        <td>@c.Weight</td>
+                                        <td>@c.Earned</td>
+                                        <td class="text-muted small">@c.Detail</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </details>
+                </div>
+
+                <div class="col-md-4">
+                    @* Admin may view AND download any photo. *@
+                    @if (candidate is not null && candidate.Photos.Any())
+                    {
+                        foreach (var photo in candidate.Photos.Take(2))
+                        {
+                            <div class="mb-2">
+                                <img src="@Url.Action("View", "Photo", new { id = photo.Id })" class="img-fluid rounded" alt="صورة" />
+                                <a class="btn btn-sm btn-outline-secondary mt-1" asp-controller="Photo" asp-action="Download" asp-route-id="@photo.Id">تنزيل الصورة</a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted small">لا توجد صور.</p>
+                    }
+                </div>
+            </div>
+
+            @if (existing is not null)
+            {
+                <div class="mt-2"><span class="badge bg-info">الحالة الحالية: @existing.Status.GetDisplayName()</span></div>
+            }
+
+            @* Decision workflow buttons *@
+            <form asp-action="Decide" method="post" class="mt-3 d-flex flex-wrap gap-2">
+                <input type="hidden" name="subjectProfileId" value="@subject.Id" />
+                <input type="hidden" name="candidateProfileId" value="@match.CandidateProfileId" />
+                <input type="hidden" name="score" value="@match.Percentage" />
+                <button name="decision" value="@MatchStatus.ShortlistedByAdmin" class="btn btn-sm btn-outline-primary">ترشيح</button>
+                <button name="decision" value="@MatchStatus.Approved" class="btn btn-sm btn-success">موافقة ✓ (تفتح الصور للطرف الآخر)</button>
+                <button name="decision" value="@MatchStatus.Contacted" class="btn btn-sm btn-outline-info">تم التواصل</button>
+                <button name="decision" value="@MatchStatus.Accepted" class="btn btn-sm btn-primary">تم القبول</button>
+                <button name="decision" value="@MatchStatus.Rejected" class="btn btn-sm btn-outline-danger">رفض</button>
+            </form>
+        </div>
+    </div>
+}

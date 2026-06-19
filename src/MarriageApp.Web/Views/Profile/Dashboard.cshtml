@@ -1,0 +1,90 @@
+@model Profile
+@{
+    ViewData["Title"] = "حسابي";
+    var statusClass = Model.Status switch
+    {
+        ProfileStatus.Matched => "badge-matched",
+        ProfileStatus.PendingMatch => "badge-pending",
+        ProfileStatus.Suspended => "badge-suspended",
+        _ => "badge-incomplete"
+    };
+}
+
+<div class="page-head d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-success mb-0">أهلاً بك يا @Model.Name 🌸</h2>
+    <span class="badge @statusClass fs-6">@Model.Status.GetDisplayName()</span>
+</div>
+
+@if (Model.Status == ProfileStatus.PendingMatch)
+{
+    <div class="alert alert-info">
+        جزاك الله خيرًا على ثقتك. بنراجع البيانات بعناية وهدوء، وأول ما نلاقي طرفًا مناسبًا هنبعتلك إشعار فورًا — مفيش داعي للقلق. 🤍
+    </div>
+}
+else if (Model.Status == ProfileStatus.Matched)
+{
+    <div class="alert alert-success alert-matched">
+        أبشِر بالخير! 🎉 تم إيجاد طرفٍ مناسب لك، والمشرف هيتواصل معاك قريب لاستكمال الخطوات بإذن الله.
+    </div>
+}
+else if (Model.Status == ProfileStatus.Incomplete)
+{
+    <div class="alert alert-warning">
+        بياناتك على وشك الاكتمال 🌷 <a asp-action="Edit" class="alert-link">كمّلها دلوقتي</a> عشان نبدأ نبحث لك عن نصيبك بإذن الله.
+    </div>
+}
+
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header bg-light fw-bold">ملخص بياناتك</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">العمر</dt><dd class="col-sm-8">@Model.Age سنة</dd>
+                    <dt class="col-sm-4">الطول</dt><dd class="col-sm-8">@Model.HeightCm سم</dd>
+                    <dt class="col-sm-4">المؤهل</dt><dd class="col-sm-8">@Model.EducationLevel.GetDisplayName()</dd>
+                    <dt class="col-sm-4">الحالة الاجتماعية</dt><dd class="col-sm-8">@Model.MaritalStatus.GetDisplayName()</dd>
+                    <dt class="col-sm-4">محل السكن</dt><dd class="col-sm-8">@Model.CurrentResidence</dd>
+                    <dt class="col-sm-4">مستوى الالتزام</dt><dd class="col-sm-8">@Model.ReligiousCommitment.GetDisplayName()</dd>
+                </dl>
+                <a class="btn btn-outline-success mt-3" asp-action="Edit">تعديل بياناتي</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-light fw-bold">الصور</div>
+            <div class="card-body">
+                <div class="row g-2 mb-3">
+                    @foreach (var photo in Model.Photos)
+                    {
+                        <div class="col-6 col-sm-4">
+                            <img class="protected-photo photo-thumb" src="@Url.Action("View", "Photo", new { id = photo.Id })" alt="صورة" />
+                        </div>
+                    }
+                    @if (!Model.Photos.Any())
+                    {
+                        <p class="text-muted">لسه مرفعتش صور — خد وقتك، مفيش استعجال 🌸</p>
+                    }
+                </div>
+
+                <form asp-controller="Profile" asp-action="UploadPhoto" method="post" enctype="multipart/form-data">
+                    <div class="mb-2">
+                        <input type="file" name="photo" class="form-control" accept="image/png,image/jpeg,image/webp" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">من يستطيع رؤية الصورة؟</label>
+                        <select name="visibility" class="form-select form-select-sm">
+                            <option value="@PhotoVisibility.AdminOnly">@PhotoVisibility.AdminOnly.GetDisplayName()</option>
+                            <option value="@PhotoVisibility.AfterMatchApproval" selected>@PhotoVisibility.AfterMatchApproval.GetDisplayName()</option>
+                            <option value="@PhotoVisibility.Hidden">@PhotoVisibility.Hidden.GetDisplayName()</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-sm w-100">ارفع الصورة بأمان 🔒</button>
+                </form>
+                <p class="text-muted small mt-2 mb-0">🔒 صورك مصونة ومشفّرة، ومتظهرش إلا بإذنك وبعد موافقة المشرف — راحتك وأمانك أولوية عندنا.</p>
+            </div>
+        </div>
+    </div>
+</div>

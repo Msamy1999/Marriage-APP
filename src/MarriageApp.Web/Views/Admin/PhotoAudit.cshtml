@@ -1,0 +1,30 @@
+@model List<PhotoAccessLog>
+@{
+    ViewData["Title"] = "سجل الوصول للصور";
+}
+
+<a asp-action="MatchReview" asp-route-id="@ViewBag.ProfileId" class="btn btn-sm btn-outline-secondary mb-3">→ رجوع</a>
+<h3 class="text-success mb-3">سجل الوصول لصور الطرف</h3>
+
+<div class="table-responsive">
+    <table class="table table-sm table-striped">
+        <thead class="table-light">
+            <tr><th>التاريخ</th><th>المستخدم</th><th>الإجراء</th><th>عنوان IP</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td>@log.AccessedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                    <td class="small">@log.AccessedByUserId</td>
+                    <td>@log.Action.GetDisplayName()</td>
+                    <td dir="ltr">@log.IpAddress</td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="4" class="text-center text-muted">لا توجد سجلات وصول.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
