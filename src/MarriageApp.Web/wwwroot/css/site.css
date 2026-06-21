@@ -76,6 +76,7 @@ h1, h2, h3, .navbar-brand, .card-header, .hero-title {
   backdrop-filter: blur(6px);
 }
 .navbar-warm .navbar-brand { font-weight: 700; font-size: 1.35rem; color: var(--brand); }
+.navbar-warm .brand-sub { font-family: var(--font-body); font-size: .8rem; font-weight: 500; color: var(--ink-soft); }
 .navbar-warm .nav-link { color: var(--ink); position: relative; font-weight: 500; }
 .navbar-warm .nav-link::after {
   content: ''; position: absolute; bottom: .15rem; right: 50%; left: 50%;
@@ -277,7 +278,8 @@ h1, h2, h3, .navbar-brand, .card-header, .hero-title {
   .container { padding-inline: 1rem; }
 
   /* Brand never crowds the toggler */
-  .navbar-warm .navbar-brand { font-size: 1.05rem; }
+  .navbar-warm .navbar-brand { font-size: 1.1rem; }
+  .navbar-warm .brand-sub { display: none; }
 
   /* Lighter hero so the fold isn't all banner */
   .hero { padding: 2.4rem 1rem 1.9rem; border-radius: 1.1rem; }

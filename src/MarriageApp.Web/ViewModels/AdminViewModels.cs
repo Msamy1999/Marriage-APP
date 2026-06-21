@@ -16,4 +16,7 @@ public class MatchReviewViewModel
 
     /// <summary>Existing Match workflow rows involving the subject (to show current decisions).</summary>
     public List<Match> ExistingMatches { get; set; } = new();
+
+    /// <summary>True when the logged-in admin is female (may view women's photos &amp; reveal them).</summary>
+    public bool CurrentAdminIsFemale { get; set; }
 }

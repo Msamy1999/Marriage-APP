@@ -29,6 +29,17 @@ public class Match
     /// <summary>Identity user id of the admin who made the latest decision.</summary>
     public string? AdminUserId { get; set; }
 
+    // ---- Photo reveal (women's photos -> groom) ----
+    /// <summary>
+    /// True once a FEMALE admin has explicitly revealed the bride's photos to this groom.
+    /// The groom can only view the bride's photos when this is set (and the bride's own
+    /// visibility setting still permits it).
+    /// </summary>
+    public bool PhotosRevealedToGroom { get; set; }
+    public DateTime? PhotosRevealedAt { get; set; }
+    /// <summary>Identity user id of the female admin who performed the reveal.</summary>
+    public string? PhotosRevealedByAdminId { get; set; }
+
     public DateTime CreatedAt { get; set; }
     public DateTime? DecisionAt { get; set; }
 }

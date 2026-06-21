@@ -83,6 +83,15 @@ namespace MarriageApp.Infrastructure.Data.Migrations
                     b.Property<int>("MaleProfileId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("PhotosRevealedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhotosRevealedByAdminId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhotosRevealedToGroom")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("Score")
                         .HasPrecision(5, 2)
                         .HasColumnType("decimal(5,2)");
@@ -479,6 +488,9 @@ namespace MarriageApp.Infrastructure.Data.Migrations
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Gender")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");

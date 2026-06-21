@@ -71,13 +71,56 @@ public class AdminController : Controller
             .Where(m => m.MaleProfileId == id || m.FemaleProfileId == id)
             .ToListAsync();
 
+        var currentAdmin = await _userManager.GetUserAsync(User);
+
         return View(new MatchReviewViewModel
         {
             Subject = subject,
             TopMatches = top,
             Candidates = candidates,
-            ExistingMatches = existing
+            ExistingMatches = existing,
+            CurrentAdminIsFemale = currentAdmin?.Gender == Gender.Female
         });
+    }
+
+    // ---- Reveal the bride's photos to the matched groom (FEMALE admins only) ----
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> RevealPhotos(int subjectProfileId, int candidateProfileId)
+    {
+        var admin = await _userManager.GetUserAsync(User);
+        if (admin?.Gender != Gender.Female)
+        {
+            TempData["Error"] = "كشف صور العروسة للعريس متاح للمشرفة فقط.";
+            return RedirectToAction(nameof(MatchReview), new { id = subjectProfileId });
+        }
+
+        var subject = await _db.Profiles.FindAsync(subjectProfileId);
+        var candidate = await _db.Profiles.FindAsync(candidateProfileId);
+        if (subject is null || candidate is null) return NotFound();
+
+        var (maleId, femaleId) = subject.Gender == Gender.Male
+            ? (subjectProfileId, candidateProfileId)
+            : (candidateProfileId, subjectProfileId);
+
+        var match = await _db.Matches
+            .FirstOrDefaultAsync(m => m.MaleProfileId == maleId && m.FemaleProfileId == femaleId);
+
+        if (match is null)
+        {
+            match = new Match { MaleProfileId = maleId, FemaleProfileId = femaleId, CreatedAt = DateTime.UtcNow };
+            _db.Matches.Add(match);
+        }
+
+        match.PhotosRevealedToGroom = true;
+        match.PhotosRevealedAt = DateTime.UtcNow;
+        match.PhotosRevealedByAdminId = admin.Id;
+        await _db.SaveChangesAsync();
+
+        // Let the groom know photos are now available to view.
+        await NotifyPartyAsync(maleId);
+
+        TempData["Message"] = "تم كشف صور العروسة للعريس بنجاح.";
+        return RedirectToAction(nameof(MatchReview), new { id = subjectProfileId });
     }
 
     // ---- Create/advance a match decision ----
@@ -145,7 +188,7 @@ public class AdminController : Controller
             UserId = user.Id,
             Email = user.Email,
             PhoneNumber = profile.PhoneNumber,
-            Title = "بشرى سارة من منصة التعارف للزواج",
+            Title = "بشرى سارة من منصة سَكينة",
             Message = "تم إيجاد طرف مناسب لك! فضلاً سجّل الدخول لمتابعة التفاصيل، وسيتواصل معك المشرف قريباً.",
             Channels = new[] { NotificationChannel.InApp, NotificationChannel.Email, NotificationChannel.Sms, NotificationChannel.WhatsApp }
         });

@@ -1,3 +1,4 @@
+using MarriageApp.Core.Enums;
 using MarriageApp.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +18,9 @@ public static class AppRoles
 public static class DbInitializer
 {
     /// <summary>
-    /// Applies pending migrations and seeds the "User"/"Admin" roles plus a default admin
-    /// account (credentials read from the "Seed:Admin" config section).
+    /// Applies pending migrations and seeds the "User"/"Admin" roles plus the admin accounts
+    /// (one female, one male) read from the "Seed:Admins" config section. Women's (bride) photos
+    /// may only be accessed by a FEMALE admin, hence each admin carries a gender.
     /// </summary>
     public static async Task SeedAsync(IServiceProvider sp)
     {
@@ -37,29 +39,61 @@ public static class DbInitializer
         }
 
         var config = services.GetRequiredService<IConfiguration>();
-        var adminEmail = config["Seed:Admin:Email"] ?? "admin@marriageapp.local";
-        var adminPassword = config["Seed:Admin:Password"] ?? "Admin#12345";
-
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-        if (await userManager.FindByEmailAsync(adminEmail) is null)
+
+        // Read the configured admins; fall back to a sensible female + male pair.
+        var admins = config.GetSection("Seed:Admins").GetChildren()
+            .Select(c => (
+                Email: c["Email"] ?? "",
+                Password: c["Password"] ?? "Admin#12345",
+                Gender: Enum.TryParse<Gender>(c["Gender"], out var g) ? g : Gender.Female,
+                FullName: c["FullName"] ?? "مشرف النظام"))
+            .Where(a => !string.IsNullOrWhiteSpace(a.Email))
+            .ToList();
+
+        if (admins.Count == 0)
         {
-            var admin = new ApplicationUser
+            admins.Add(("admin.female@marriageapp.local", "Admin#12345", Gender.Female, "المشرفة"));
+            admins.Add(("admin.male@marriageapp.local", "Admin#12345", Gender.Male, "المشرف"));
+        }
+
+        foreach (var a in admins)
+        {
+            var existing = await userManager.FindByEmailAsync(a.Email);
+            if (existing is null)
             {
-                UserName = adminEmail,
-                Email = adminEmail,
-                EmailConfirmed = true,
-                FullName = "مشرف النظام",
-                CreatedAt = DateTime.UtcNow
-            };
-            var result = await userManager.CreateAsync(admin, adminPassword);
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(admin, AppRoles.Admin);
-                logger.LogInformation("Seeded default admin {Email}", adminEmail);
+                var admin = new ApplicationUser
+                {
+                    UserName = a.Email,
+                    Email = a.Email,
+                    EmailConfirmed = true,
+                    FullName = a.FullName,
+                    Gender = a.Gender,
+                    CreatedAt = DateTime.UtcNow
+                };
+                var result = await userManager.CreateAsync(admin, a.Password);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, AppRoles.Admin);
+                    logger.LogInformation("Seeded {Gender} admin {Email}", a.Gender, a.Email);
+                }
+                else
+                {
+                    logger.LogError("Failed to seed admin {Email}: {Errors}", a.Email,
+                        string.Join("; ", result.Errors.Select(e => e.Description)));
+                }
             }
             else
             {
-                logger.LogError("Failed to seed admin: {Errors}", string.Join("; ", result.Errors.Select(e => e.Description)));
+                // Ensure an existing admin has the right role + a gender (back-fill old seeds).
+                if (!await userManager.IsInRoleAsync(existing, AppRoles.Admin))
+                    await userManager.AddToRoleAsync(existing, AppRoles.Admin);
+                if (existing.Gender is null)
+                {
+                    existing.Gender = a.Gender;
+                    await userManager.UpdateAsync(existing);
+                    logger.LogInformation("Back-filled gender {Gender} for admin {Email}", a.Gender, a.Email);
+                }
             }
         }
     }

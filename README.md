@@ -1,4 +1,4 @@
-# منصة التعارف للزواج · Marriage Matchmaking Platform
+# سَكينة · Sakina — منصة التعارف بغرض الزواج
 
 A friendly, **Arabic-first (RTL)** marriage matchmaking web application for the Muslim community in
 Egypt. Applicants (عريس / عروسة) register detailed profiles; an **admin** reviews system-generated
@@ -22,7 +22,7 @@ Built with **ASP.NET Core 8 MVC + Razor**, **Entity Framework Core**, **SQL Serv
   approves that match**. Every access is audited.
 - **Notifications** — pluggable channels (in-app + email out of the box; WhatsApp/SMS via Twilio when
   configured).
-- **Warm, fun, fully responsive RTL UI** — "وِصال" blush-and-gold theme, mobile-optimized.
+- **Warm, fun, fully responsive RTL UI** — a blush-and-gold theme, mobile-optimized.
 
 ## Solution structure
 
@@ -44,15 +44,19 @@ dotnet build
 dotnet run --project src/MarriageApp.Web
 ```
 
-On first run the app applies EF migrations and seeds the roles + a default admin. In `Development`
-it also seeds sample grooms/brides so the match screen has data.
+On first run the app applies EF migrations and seeds the roles + two admins (one female, one male).
+In `Development` it also seeds sample grooms/brides so the match screen has data.
 
 - App: `http://localhost:5279`
-- **Default admin:** `admin@marriageapp.local` / `Admin#12345`
+- **Female admin:** `admin@marriageapp.local` / `Admin#12345` — may view/download women's photos and reveal them to the matched groom.
+- **Male admin:** `admin.male@marriageapp.local` / `Admin#12345` — full access except women's photos.
 - **Sample test users** (Development only): e.g. `fatma.bride@test.local` — password `Test#12345`
 
+> Women's (bride) photos are encrypted at rest and only a **female admin** can view/download them.
+> The groom sees a bride's photos only after the female admin explicitly reveals them.
+>
 > Change the seeded credentials in [`appsettings.json`](src/MarriageApp.Web/appsettings.json)
-> (`Seed:Admin`) before any real deployment, and supply a production SQL Server connection string.
+> (`Seed:Admins`) before any real deployment, and supply a production SQL Server connection string.
 
 ## Configuration
 

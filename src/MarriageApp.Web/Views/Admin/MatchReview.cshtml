@@ -81,20 +81,57 @@
                 </div>
 
                 <div class="col-md-4">
-                    @* Admin may view AND download any photo. *@
+                    @{
+                        var candIsFemale = candidate?.Gender == Gender.Female;
+                        // The female side of THIS subject↔candidate pairing (for reveal state).
+                        var pairMaleId = subject.Gender == Gender.Male ? subject.Id : match.CandidateProfileId;
+                        var pairFemaleId = subject.Gender == Gender.Male ? match.CandidateProfileId : subject.Id;
+                        var pairMatch = Model.ExistingMatches.FirstOrDefault(e => e.MaleProfileId == pairMaleId && e.FemaleProfileId == pairFemaleId);
+                        var photosRevealed = pairMatch?.PhotosRevealedToGroom == true;
+                        // Women's photos may only be seen by a female admin.
+                        var canSeeCandidatePhotos = !candIsFemale || Model.CurrentAdminIsFemale;
+                    }
                     @if (candidate is not null && candidate.Photos.Any())
                     {
-                        foreach (var photo in candidate.Photos.Take(2))
+                        if (canSeeCandidatePhotos)
                         {
-                            <div class="mb-2">
-                                <img src="@Url.Action("View", "Photo", new { id = photo.Id })" class="img-fluid rounded" alt="صورة" />
-                                <a class="btn btn-sm btn-outline-secondary mt-1" asp-controller="Photo" asp-action="Download" asp-route-id="@photo.Id">تنزيل الصورة</a>
-                            </div>
+                            foreach (var photo in candidate.Photos.Take(2))
+                            {
+                                <div class="mb-2">
+                                    <img src="@Url.Action("View", "Photo", new { id = photo.Id })" class="img-fluid rounded" alt="صورة" />
+                                    <a class="btn btn-sm btn-outline-secondary mt-1" asp-controller="Photo" asp-action="Download" asp-route-id="@photo.Id">تنزيل الصورة</a>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-info py-2 px-2 small mb-2">🔒 صور العروسة متاحة للمشرفة (نساء) فقط.</div>
                         }
                     }
                     else
                     {
                         <p class="text-muted small">لا توجد صور.</p>
+                    }
+
+                    @* Reveal the bride's photos to the matched groom — FEMALE admin only *@
+                    @if (Model.CurrentAdminIsFemale)
+                    {
+                        if (photosRevealed)
+                        {
+                            <span class="badge badge-matched">✓ تم كشف صور العروسة للعريس</span>
+                        }
+                        else
+                        {
+                            <form asp-action="RevealPhotos" method="post" class="mt-1">
+                                <input type="hidden" name="subjectProfileId" value="@subject.Id" />
+                                <input type="hidden" name="candidateProfileId" value="@match.CandidateProfileId" />
+                                <button type="submit" class="btn btn-sm btn-gold">👁️ كشف صور العروسة للعريس</button>
+                            </form>
+                        }
+                    }
+                    else if (photosRevealed)
+                    {
+                        <span class="badge badge-matched">✓ تم كشف الصور للعريس</span>
                     }
                 </div>
             </div>
@@ -110,7 +147,7 @@
                 <input type="hidden" name="candidateProfileId" value="@match.CandidateProfileId" />
                 <input type="hidden" name="score" value="@match.Percentage" />
                 <button name="decision" value="@MatchStatus.ShortlistedByAdmin" class="btn btn-sm btn-outline-primary">ترشيح</button>
-                <button name="decision" value="@MatchStatus.Approved" class="btn btn-sm btn-success">موافقة ✓ (تفتح الصور للطرف الآخر)</button>
+                <button name="decision" value="@MatchStatus.Approved" class="btn btn-sm btn-success">موافقة ✓</button>
                 <button name="decision" value="@MatchStatus.Contacted" class="btn btn-sm btn-outline-info">تم التواصل</button>
                 <button name="decision" value="@MatchStatus.Accepted" class="btn btn-sm btn-primary">تم القبول</button>
                 <button name="decision" value="@MatchStatus.Rejected" class="btn btn-sm btn-outline-danger">رفض</button>

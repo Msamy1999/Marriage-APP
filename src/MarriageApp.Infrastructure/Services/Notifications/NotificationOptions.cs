@@ -11,7 +11,7 @@ public class EmailOptions
     public string Username { get; set; } = "";
     public string Password { get; set; } = "";
     public string FromAddress { get; set; } = "no-reply@marriageapp.local";
-    public string FromName { get; set; } = "منصة التعارف للزواج";
+    public string FromName { get; set; } = "منصة سَكينة للتعارف";
 }
 
 /// <summary>Twilio settings shared by the SMS and WhatsApp channels ("Notifications:Twilio").</summary>
