@@ -1,12 +1,19 @@
 using MarriageApp.Infrastructure;
 using MarriageApp.Infrastructure.Data;
 using MarriageApp.Infrastructure.Identity;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ---- Infrastructure (EF Core, matching, notifications, photo storage) ----
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Persist Data Protection keys to a stable folder so encrypted photos stay decryptable
+// and login cookies survive app restarts/redeploys (important on shared hosting).
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath, "App_Data", "keys")))
+    .SetApplicationName("SakinaApp");
 
 // ---- ASP.NET Core Identity with role support ("User" / "Admin") ----
 builder.Services
@@ -48,11 +55,13 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Apply migrations + seed roles and the default admin on startup.
+// Apply migrations + seed roles and the two admins on startup.
 await DbInitializer.SeedAsync(app.Services);
 
-// In Development only: seed sample grooms/brides (idempotent — skips if profiles exist).
-if (app.Environment.IsDevelopment())
+// Seed the sample grooms/brides in Development, or anywhere when Seed:DemoData is true
+// (e.g. on the hosted demo). Idempotent — it skips accounts that already exist.
+var seedDemoData = app.Configuration.GetValue<bool>("Seed:DemoData");
+if (app.Environment.IsDevelopment() || seedDemoData)
 {
     await TestDataSeeder.SeedAsync(app.Services);
 }
